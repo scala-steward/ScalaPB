@@ -50,4 +50,12 @@ class TextFormatConformanceSpec extends FunSuite {
       TestAllTypesProto3(optionalBytes = ByteString.copyFromUtf8(expected))
     )
   }
+  test("AnyField with expanded type URL") {
+    checkText(
+      "optional_any { [type.googleapis.com/protobuf_test_messages.proto3.TestAllTypesProto3] { optional_int32: 12345 } }",
+      TestAllTypesProto3(optionalAny =
+        Some(com.google.protobuf.any.Any.pack(TestAllTypesProto3(optionalInt32 = 12345)))
+      )
+    )
+  }
 }

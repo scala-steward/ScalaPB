@@ -16,6 +16,3 @@ Required.Proto2.TextFormatInput.GroupFieldWithColon.ProtobufOutput
 Required.Proto2.TextFormatInput.GroupFieldWithColon.ProtobufOutput
 Required.Proto2.TextFormatInput.GroupFieldWithColon.TextFormatOutput
 Required.Proto2.TextFormatInput.GroupFieldWithColon.TextFormatOutput
-Required.Proto3.TextFormatInput.AnyField.ProtobufOutput
-Required.Proto3.TextFormatInput.AnyField.ProtobufOutput
-Required.Proto3.TextFormatInput.AnyField.TextFormatOutput

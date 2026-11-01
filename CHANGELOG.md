@@ -1,5 +1,6 @@
 # Change Log
 ## [1.0.0] (Not yet released)
+- Parse expanded text-format `Any` values with an explicitly supplied `textformat.TypeRegistry`; preserve the configured recursion limit.
 - Accept `\UXXXXXXXX` text-format Unicode escapes, including supplementary characters; reject out-of-range code points.
 - Accept `\uXXXX` Unicode escapes in text-format string and bytes fields; reject surrogate code points and malformed escapes.
 - BREAKING CHANGE: TextFormat printing (including `toProtoString` and generated
