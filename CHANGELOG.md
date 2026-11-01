@@ -1,5 +1,6 @@
 # Change Log
 ## [1.0.0] (Not yet released)
+- Verify JSON null-valued oneof presence with the upgraded conformance JSON parser.
 - Use scalapb-json4s 1.0.0-alpha.2 in conformance tests to accept URL-safe Base64 bytes.
 - Reject protobuf FieldMask paths that cannot round-trip through JSON, including uppercase letters, repeated underscores, and underscores before digits.
 - Reject underscores in JSON FieldMask paths and preserve leading capitals when converting them to protobuf paths.

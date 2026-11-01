@@ -50,4 +50,9 @@ class JsonConformanceSpec extends FunSuite {
     assert(json.result.isJsonPayload, json.toString)
     assertEquals(json.getJsonPayload, """{"optionalBytes":"+w=="}""")
   }
+  test("NullValueInOtherOneofNewFormat retains oneof presence") {
+    val response = jsonRequest("""{"oneofNullValue":null}""")
+    assert(response.result.isJsonPayload, response.toString)
+    assertEquals(response.getJsonPayload, """{"oneofNullValue":null}""")
+  }
 }
