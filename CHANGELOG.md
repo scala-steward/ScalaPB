@@ -1,5 +1,6 @@
 # Change Log
 ## [1.0.0] (Not yet released)
+- Accept `\uXXXX` Unicode escapes in text-format string and bytes fields; reject surrogate code points and malformed escapes.
 - BREAKING CHANGE: TextFormat printing (including `toProtoString` and generated
   `toString`) now omits implicit scalar defaults and empty optional `no_box` and
   sealed-oneof message fields by default, matching Java's field-presence behavior

@@ -487,6 +487,7 @@ lazy val conformance = (projectMatrix in file("conformance"))
     Seq(Scala213)
   )
   .settings(
+    libraryDependencies += "org.scalameta" %% "munit" % versions.munit % Test,
     Compile / PB.targets := Seq(
       genModule("scalapb.ScalaPbCodeGenerator$") -> (Compile / sourceManaged).value
     ),
