@@ -26,4 +26,22 @@ class UnknownFieldsTextFormatSpec extends FunSuite {
       "value: 42\n2: 123\n3: 0\n3: 18446744073709551615\n3: 0xffffffff\n3: 0xffffffffffffffff\n3: \"\\377\"\n"
     )
   }
+  test("unknown embedded messages print recursively with a depth bound and byte fallback") {
+    def wrap(bytes: ByteString) = Int32Value().withUnknownFields(
+      UnknownFieldSet(
+        Map(
+          2 -> UnknownFieldSet.Field(lengthDelimited = Seq(bytes))
+        )
+      )
+    )
+    assertEquals(
+      TextFormat.printToString(wrap(ByteString.copyFrom(Array[Byte](8, 111))), true),
+      "2 {\n  1: 111\n}\n"
+    )
+    assertEquals(TextFormat.printToString(wrap(ByteString.EMPTY), true), "2 {\n}\n")
+    val nested = (1 to 105).foldLeft(ByteString.EMPTY)((bytes, _) => wrap(bytes).toByteString)
+    val text   = TextFormat.printToString(wrap(nested), true)
+    assertEquals(text.count(_ == '{'), 100)
+    assert(text.contains(": \""))
+  }
 }

@@ -80,4 +80,22 @@ class TextFormatConformanceSpec extends FunSuite {
       )
     }
   }
+  test("MessageUnknownFields_Print") {
+    val unknown =
+      com.google.protobuf_test_messages.proto2.test_messages_proto2.UnknownToTestAllTypes(
+        nestedMessage = Some(
+          com.google.protobuf_test_messages.proto2.test_messages_proto2
+            .ForeignMessageProto2(c = Some(111))
+        )
+      )
+    val response = ConformanceScala.handleTest(
+      ConformanceRequest()
+        .withMessageType("protobuf_test_messages.proto3.TestAllTypesProto3")
+        .withProtobufPayload(unknown.toByteString)
+        .withRequestedOutputFormat(WireFormat.TEXT_FORMAT)
+        .withPrintUnknownFields(true)
+    )
+    assert(response.result.isTextPayload, response.toString)
+    assertEquals(response.getTextPayload, "1003 {\n  1: 111\n}\n")
+  }
 }

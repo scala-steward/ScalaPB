@@ -40,7 +40,11 @@ object Printer {
     if (printUnknownFields) printUnknown(t.unknownFields, out)
   }
 
-  private def printUnknown(fields: scalapb.UnknownFieldSet, out: TextGenerator): Unit =
+  private def printUnknown(
+      fields: scalapb.UnknownFieldSet,
+      out: TextGenerator,
+      depth: Int = 0
+  ): Unit =
     fields.asMap.toSeq.sortBy(_._1).foreach { case (number, field) =>
       def scalar(value: String): Unit = {
         out.add(number.toString).add(": ").addNewLine(value)
@@ -52,7 +56,31 @@ object Printer {
       field.fixed64.foreach(v =>
         scalar("0x" + ("0000000000000000" + java.lang.Long.toHexString(v)).takeRight(16))
       )
-      field.lengthDelimited.foreach(v => scalar("\"" + TextFormatUtils.escapeBytes(v) + "\""))
+      field.lengthDelimited.foreach { bytes =>
+        // Prefer a message representation for complete wire messages, as Java TextFormat does.
+        // Bound speculative recursive decoding of unknown data.
+        val nested =
+          if (depth >= 100) None
+          else
+            scala.util.Try {
+              val input   = bytes.newCodedInput()
+              val builder = new scalapb.UnknownFieldSet.Builder
+              var tag     = input.readTag()
+              while (tag != 0) {
+                builder.parseField(tag, input)
+                tag = input.readTag()
+              }
+              input.checkLastTagWas(0)
+              builder.result()
+            }.toOption
+        nested match {
+          case Some(message) =>
+            out.add(number.toString).addNewLine(" {").indent()
+            printUnknown(message, out, depth + 1)
+            out.outdent().addNewLine("}")
+          case None => scalar("\"" + TextFormatUtils.escapeBytes(bytes) + "\"")
+        }
+      }
     }
 
   private def omitEmptyMessage(fd: FieldDescriptor, messageType: Descriptor): Boolean = {
