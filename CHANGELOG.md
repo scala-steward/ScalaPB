@@ -1,5 +1,6 @@
 # Change Log
 ## [1.0.0] (Not yet released)
+- Reject underscores in JSON FieldMask paths and preserve leading capitals when converting them to protobuf paths.
 - Print unknown length-delimited fields as nested text-format messages when decodable, with a depth limit and escaped-byte fallback.
 - Add opt-in text-format printing of unknown scalar wire fields. Expose unknown fields through `GeneratedMessage.unknownFields`, returning an empty set for messages that do not preserve them. Regenerate sources before recompiling: stored unknown fields now override the concrete accessor.
 - Parse expanded text-format `Any` values with an explicitly supplied `textformat.TypeRegistry`; preserve the configured recursion limit.

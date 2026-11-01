@@ -113,11 +113,19 @@ object FieldMaskUtil {
   }
 
   def fromJsonString(value: String): FieldMask = {
+    require(!value.contains('_'), "FieldMask JSON paths must not contain underscores")
     val result = value
       .split(",")
       .iterator
       .withFilter(_.nonEmpty)
-      .map { path => camelCaseToSnakeCase(path) }
+      .map { path =>
+        val result = new java.lang.StringBuilder
+        path.foreach { c =>
+          if (isUpper(c)) result.append('_').append(toLower(c))
+          else result.append(c)
+        }
+        result.toString
+      }
       .toList
     FieldMask(result)
   }
