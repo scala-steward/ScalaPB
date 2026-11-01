@@ -1,5 +1,6 @@
 # Change Log
 ## [1.0.0] (Not yet released)
+- Reject JSON strings containing unpaired or reversed Unicode surrogates using scalapb-json4s 1.0.0-alpha.3.
 - Reject quoted JSON boolean values in conformance tests using scalapb-json4s 1.0.0-alpha.3.
 - Verify JSON null-valued oneof presence with the upgraded conformance JSON parser.
 - Use scalapb-json4s 1.0.0-alpha.2 in conformance tests to accept URL-safe Base64 bytes.

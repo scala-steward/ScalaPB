@@ -61,4 +61,11 @@ class JsonConformanceSpec extends FunSuite {
       assert(response.result.isParseError, response.toString)
     }
   }
+  test("StringField rejects unpaired and reversed Unicode surrogates") {
+    for (units <- Seq(Seq("D800"), Seq("DC00"), Seq("DE01", "D83D"))) {
+      val escaped = units.map(unit => 92.toChar.toString + "u" + unit).mkString
+      val response = jsonRequest(s"""{"optionalString":"$escaped"}""")
+      assert(response.result.isParseError, response.toString)
+    }
+  }
 }
