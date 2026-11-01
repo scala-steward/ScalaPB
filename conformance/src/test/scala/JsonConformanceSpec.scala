@@ -63,9 +63,30 @@ class JsonConformanceSpec extends FunSuite {
   }
   test("StringField rejects unpaired and reversed Unicode surrogates") {
     for (units <- Seq(Seq("D800"), Seq("DC00"), Seq("DE01", "D83D"))) {
-      val escaped = units.map(unit => 92.toChar.toString + "u" + unit).mkString
+      val escaped  = units.map(unit => 92.toChar.toString + "u" + unit).mkString
       val response = jsonRequest(s"""{"optionalString":"$escaped"}""")
       assert(response.result.isParseError, response.toString)
     }
+  }
+  test("FieldNameExtension preserves proto2 extension fields") {
+    val json    = """{"[protobuf_test_messages.proto2.extension_int32]":1}"""
+    val request = ConformanceRequest()
+      .withMessageType("protobuf_test_messages.proto2.TestAllTypesProto2")
+      .withJsonPayload(json)
+    val response = ConformanceScala.handleTest(request.withRequestedOutputFormat(WireFormat.JSON))
+    assert(response.result.isJsonPayload, response.toString)
+    assertEquals(response.getJsonPayload, json)
+    val binary = ConformanceScala.handleTest(request.withRequestedOutputFormat(WireFormat.PROTOBUF))
+    assert(binary.result.isProtobufPayload, binary.toString)
+    import com.google.protobuf_test_messages.proto2.test_messages_proto2.{
+      TestAllTypesProto2,
+      TestMessagesProto2Proto
+    }
+    assertEquals(
+      TestAllTypesProto2
+        .parseFrom(binary.getProtobufPayload.toByteArray)
+        .extension(TestMessagesProto2Proto.extensionInt32),
+      Some(1)
+    )
   }
 }
