@@ -5,8 +5,6 @@
 # that we don't introduce regressions in other tests.
 
 Recommended.Proto2.JsonInput.FieldNameExtension.Validator
-Recommended.Proto3.JsonInput.BoolFieldDoubleQuotedFalse
-Recommended.Proto3.JsonInput.BoolFieldDoubleQuotedTrue
 Recommended.Proto3.JsonInput.StringFieldSurrogateInWrongOrder
 Recommended.Proto3.JsonInput.StringFieldUnpairedHighSurrogate
 Recommended.Proto3.JsonInput.StringFieldUnpairedLowSurrogate

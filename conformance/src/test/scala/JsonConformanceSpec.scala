@@ -55,4 +55,10 @@ class JsonConformanceSpec extends FunSuite {
     assert(response.result.isJsonPayload, response.toString)
     assertEquals(response.getJsonPayload, """{"oneofNullValue":null}""")
   }
+  test("BoolFieldDoubleQuotedTrue and BoolFieldDoubleQuotedFalse") {
+    for (value <- Seq("true", "false")) {
+      val response = jsonRequest(s"""{"optionalBool":"$value"}""")
+      assert(response.result.isParseError, response.toString)
+    }
+  }
 }
