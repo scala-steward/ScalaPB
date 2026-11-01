@@ -7,8 +7,6 @@
 Recommended.Proto2.JsonInput.FieldNameExtension.Validator
 Recommended.Proto3.JsonInput.BoolFieldDoubleQuotedFalse
 Recommended.Proto3.JsonInput.BoolFieldDoubleQuotedTrue
-Recommended.Proto3.JsonInput.BytesFieldBase64Url.JsonOutput
-Recommended.Proto3.JsonInput.BytesFieldBase64Url.ProtobufOutput
 Recommended.Proto3.JsonInput.NullValueInOtherOneofNewFormat.Validator
 Recommended.Proto3.JsonInput.StringFieldSurrogateInWrongOrder
 Recommended.Proto3.JsonInput.StringFieldUnpairedHighSurrogate

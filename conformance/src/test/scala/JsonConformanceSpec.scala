@@ -39,4 +39,15 @@ class JsonConformanceSpec extends FunSuite {
       assert(response.result.isSerializeError, response.toString)
     }
   }
+  test("BytesFieldBase64Url in protobuf and JSON output") {
+    val binary = jsonRequest("""{"optionalBytes":"-_"}""", WireFormat.PROTOBUF)
+    assert(binary.result.isProtobufPayload, binary.toString)
+    assertEquals(
+      TestAllTypesProto3.parseFrom(binary.getProtobufPayload.toByteArray).optionalBytes,
+      com.google.protobuf.ByteString.copyFrom(Array[Byte](0xfb.toByte))
+    )
+    val json = jsonRequest("""{"optionalBytes":"-_"}""")
+    assert(json.result.isJsonPayload, json.toString)
+    assertEquals(json.getJsonPayload, """{"optionalBytes":"+w=="}""")
+  }
 }
