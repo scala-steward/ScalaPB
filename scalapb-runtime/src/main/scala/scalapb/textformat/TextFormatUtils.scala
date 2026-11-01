@@ -107,6 +107,7 @@ private[scalapb] object TextFormatUtils {
         case (EscapeMode, CH_QM)                     => result += '?'; Default
         case (EscapeMode, CH_X)                      => Hex0
         case (EscapeMode, b) if b == 'u'             => UnicodeEscape(0L, 4)
+        case (EscapeMode, b) if b == 'U'             => UnicodeEscape(0L, 8)
         case (EscapeMode, _) => Error("Invalid escape sequence: " + b.toChar)
         case (UnicodeEscape(value, remaining), b) if isHexDigit(b.toChar) =>
           val codePoint = value * 16 + digitValue(b)

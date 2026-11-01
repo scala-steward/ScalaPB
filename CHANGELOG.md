@@ -1,5 +1,6 @@
 # Change Log
 ## [1.0.0] (Not yet released)
+- Accept `\UXXXXXXXX` text-format Unicode escapes, including supplementary characters; reject out-of-range code points.
 - Accept `\uXXXX` Unicode escapes in text-format string and bytes fields; reject surrogate code points and malformed escapes.
 - BREAKING CHANGE: TextFormat printing (including `toProtoString` and generated
   `toString`) now omits implicit scalar defaults and empty optional `no_box` and

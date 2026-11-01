@@ -27,4 +27,15 @@ class UnicodeEscapeSpec extends FunSuite {
       assert(TextFormatUtils.unescapeBytes(slash + "u" + digits).isLeft, digits)
     }
   }
+  test("long Unicode escapes support supplementary characters without overflow") {
+    for (codePoint <- Seq(0, 0x1234, 0x10437, 0x10ffff)) {
+      val escape   = slash + "U" + f"$codePoint%08x"
+      val expected = new String(Character.toChars(codePoint))
+      assertEquals(TextFormatUtils.unescapeText(escape), Right(expected))
+      assertEquals(TextFormatUtils.unescapeBytes(escape), Right(ByteString.copyFromUtf8(expected)))
+    }
+    for (digits <- Seq("", "0000123", "0000123x", "00110000", "ffffffff", "0000d800", "0000dfff")) {
+      assert(TextFormatUtils.unescapeBytes(slash + "U" + digits).isLeft, digits)
+    }
+  }
 }

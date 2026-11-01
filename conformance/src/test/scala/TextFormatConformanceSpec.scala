@@ -41,4 +41,13 @@ class TextFormatConformanceSpec extends FunSuite {
       TestAllTypesProto3(optionalBytes = ByteString.copyFromUtf8("\u1234"))
     )
   }
+  test("StringLiteralLongUnicodeEscapesString and Bytes") {
+    val escape   = "\\" + "U00001234" + "\\" + "U00010437"
+    val expected = "\u1234" + new String(Character.toChars(0x10437))
+    checkText("optional_string: '" + escape + "'", TestAllTypesProto3(optionalString = expected))
+    checkText(
+      "optional_bytes: '" + escape + "'",
+      TestAllTypesProto3(optionalBytes = ByteString.copyFromUtf8(expected))
+    )
+  }
 }
