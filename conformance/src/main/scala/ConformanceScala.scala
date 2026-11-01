@@ -115,7 +115,9 @@ object ConformanceScala {
                 ConformanceResponse().withSerializeError(err.getMessage)
             }
           case WireFormat.TEXT_FORMAT =>
-            ConformanceResponse().withTextPayload(input.toProtoString)
+            ConformanceResponse().withTextPayload(
+              TextFormat.printToString(input, request.printUnknownFields)
+            )
           case _ => ConformanceResponse()
         }
       case Left(err) =>

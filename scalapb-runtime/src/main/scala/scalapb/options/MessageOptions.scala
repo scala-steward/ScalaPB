@@ -49,7 +49,7 @@ final case class MessageOptions(
     derives: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Vector.empty,
     sealedOneofDerives: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Vector.empty,
     sealedOneofEmptyExtends: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Vector.empty,
-    unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
+    override val unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
     ) extends scalapb.GeneratedMessage with scalapb.lenses.Updatable[MessageOptions] with _root_.scalapb.ExtendableMessage[MessageOptions] {
     @transient
     private[this] var __serializedSizeMemoized: _root_.scala.Int = 0

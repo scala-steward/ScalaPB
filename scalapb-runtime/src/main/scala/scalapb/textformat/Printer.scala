@@ -5,8 +5,10 @@ import scalapb.{GeneratedMessage, textformat}
 import scala.annotation.nowarn
 
 object Printer {
+  def print(t: GeneratedMessage, out: TextGenerator): Unit = print(t, out, false)
+
   @nowarn("cat=deprecation")
-  def print(t: GeneratedMessage, out: TextGenerator): Unit =
+  private def print(t: GeneratedMessage, out: TextGenerator, printUnknownFields: Boolean): Unit = {
     t.companion.scalaDescriptor.fields.sortBy(_.number).foreach { fd =>
       fd.scalaType match {
         case ScalaType.Message(messageType) =>
@@ -15,7 +17,9 @@ object Printer {
           // including negative floating-point zero, which TextFormat must preserve.
           val value = t.getFieldByNumber(fd.number)
           if (fd.isRepeated)
-            value.asInstanceOf[Seq[GeneratedMessage]].foreach(printMessageField(fd, _, out))
+            value
+              .asInstanceOf[Seq[GeneratedMessage]]
+              .foreach(printMessageField(fd, _, out, printUnknownFields))
           else {
             val omitEmpty = omitEmptyMessage(fd, messageType)
             // The legacy accessor returns null for an unboxed default instance, even when
@@ -28,10 +32,27 @@ object Printer {
                   .asInstanceOf[GeneratedMessage]
               else value.asInstanceOf[GeneratedMessage]
             if (message != null && (!omitEmpty || message.serializedSize != 0))
-              printMessageField(fd, message, out)
+              printMessageField(fd, message, out, printUnknownFields)
           }
         case _ => printField(fd, t.getField(fd), out)
       }
+    }
+    if (printUnknownFields) printUnknown(t.unknownFields, out)
+  }
+
+  private def printUnknown(fields: scalapb.UnknownFieldSet, out: TextGenerator): Unit =
+    fields.asMap.toSeq.sortBy(_._1).foreach { case (number, field) =>
+      def scalar(value: String): Unit = {
+        out.add(number.toString).add(": ").addNewLine(value)
+        ()
+      }
+      field.varint.foreach(v => scalar(TextFormatUtils.unsignedToString(v)))
+      field.fixed32
+        .foreach(v => scalar("0x" + ("00000000" + java.lang.Integer.toHexString(v)).takeRight(8)))
+      field.fixed64.foreach(v =>
+        scalar("0x" + ("0000000000000000" + java.lang.Long.toHexString(v)).takeRight(16))
+      )
+      field.lengthDelimited.foreach(v => scalar("\"" + TextFormatUtils.escapeBytes(v) + "\""))
     }
 
   private def omitEmptyMessage(fd: FieldDescriptor, messageType: Descriptor): Boolean = {
@@ -54,10 +75,11 @@ object Printer {
   private def printMessageField(
       fd: FieldDescriptor,
       message: GeneratedMessage,
-      out: TextGenerator
+      out: TextGenerator,
+      printUnknownFields: Boolean
   ): Unit = {
     out.add(fd.name).addNewLine(" {").indent()
-    print(message, out)
+    print(message, out, printUnknownFields)
     out.outdent().addNewLine("}")
     ()
   }
@@ -81,9 +103,22 @@ object Printer {
     }
   }
 
-  def printToString(t: GeneratedMessage, singleLineMode: Boolean, escapeNonAscii: Boolean) = {
+  def printToString(
+      t: GeneratedMessage,
+      singleLineMode: Boolean,
+      escapeNonAscii: Boolean
+  ): String = {
+    printToString(t, singleLineMode, escapeNonAscii, false)
+  }
+
+  def printToString(
+      t: GeneratedMessage,
+      singleLineMode: Boolean,
+      escapeNonAscii: Boolean,
+      printUnknownFields: Boolean
+  ): String = {
     val out = new TextGenerator(singleLine = singleLineMode, escapeNonAscii = escapeNonAscii)
-    print(t, out)
+    print(t, out, printUnknownFields)
     out.result()
   }
 

@@ -123,7 +123,7 @@ final case class ScalaPbOptions(
     publicConstructorParameters: _root_.scala.Option[_root_.scala.Boolean] = _root_.scala.None,
     useSchemaUtf8Validation: _root_.scala.Option[_root_.scala.Boolean] = _root_.scala.None,
     testOnlyNoJavaConversions: _root_.scala.Option[_root_.scala.Boolean] = _root_.scala.None,
-    unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
+    override val unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
     ) extends scalapb.GeneratedMessage with scalapb.lenses.Updatable[ScalaPbOptions] with _root_.scalapb.ExtendableMessage[ScalaPbOptions] {
     @transient
     private[this] var __serializedSizeMemoized: _root_.scala.Int = 0
@@ -925,7 +925,7 @@ object ScalaPbOptions extends scalapb.GeneratedMessageCompanion[_root_.scalapb.o
   final case class AuxMessageOptions(
       target: _root_.scala.Option[_root_.scala.Predef.String] = _root_.scala.None,
       options: _root_.scala.Option[_root_.scalapb.options.MessageOptions] = _root_.scala.None,
-      unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
+      override val unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
       ) extends scalapb.GeneratedMessage with scalapb.lenses.Updatable[AuxMessageOptions] {
       @transient
       private[this] var __serializedSizeMemoized: _root_.scala.Int = 0
@@ -1075,7 +1075,7 @@ object ScalaPbOptions extends scalapb.GeneratedMessageCompanion[_root_.scalapb.o
   final case class AuxFieldOptions(
       target: _root_.scala.Option[_root_.scala.Predef.String] = _root_.scala.None,
       options: _root_.scala.Option[_root_.scalapb.options.FieldOptions] = _root_.scala.None,
-      unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
+      override val unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
       ) extends scalapb.GeneratedMessage with scalapb.lenses.Updatable[AuxFieldOptions] {
       @transient
       private[this] var __serializedSizeMemoized: _root_.scala.Int = 0
@@ -1225,7 +1225,7 @@ object ScalaPbOptions extends scalapb.GeneratedMessageCompanion[_root_.scalapb.o
   final case class AuxEnumOptions(
       target: _root_.scala.Option[_root_.scala.Predef.String] = _root_.scala.None,
       options: _root_.scala.Option[_root_.scalapb.options.EnumOptions] = _root_.scala.None,
-      unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
+      override val unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
       ) extends scalapb.GeneratedMessage with scalapb.lenses.Updatable[AuxEnumOptions] {
       @transient
       private[this] var __serializedSizeMemoized: _root_.scala.Int = 0
@@ -1375,7 +1375,7 @@ object ScalaPbOptions extends scalapb.GeneratedMessageCompanion[_root_.scalapb.o
   final case class AuxEnumValueOptions(
       target: _root_.scala.Option[_root_.scala.Predef.String] = _root_.scala.None,
       options: _root_.scala.Option[_root_.scalapb.options.EnumValueOptions] = _root_.scala.None,
-      unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
+      override val unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
       ) extends scalapb.GeneratedMessage with scalapb.lenses.Updatable[AuxEnumValueOptions] {
       @transient
       private[this] var __serializedSizeMemoized: _root_.scala.Int = 0
