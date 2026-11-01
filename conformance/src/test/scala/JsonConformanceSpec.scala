@@ -25,4 +25,18 @@ class JsonConformanceSpec extends FunSuite {
       Seq("foo", "bar_bar", "_foo")
     )
   }
+  test("FieldMaskPathsDontRoundTrip, FieldMaskNumbersDontRoundTrip, FieldMaskTooManyUnderscore") {
+    for (path <- Seq("fooBar", "foo_3_bar", "foo__bar")) {
+      val message = TestAllTypesProto3(optionalFieldMask =
+        Some(com.google.protobuf.field_mask.FieldMask(Seq(path)))
+      )
+      val response = ConformanceScala.handleTest(
+        ConformanceRequest()
+          .withMessageType("protobuf_test_messages.proto3.TestAllTypesProto3")
+          .withProtobufPayload(message.toByteString)
+          .withRequestedOutputFormat(WireFormat.JSON)
+      )
+      assert(response.result.isSerializeError, response.toString)
+    }
+  }
 }

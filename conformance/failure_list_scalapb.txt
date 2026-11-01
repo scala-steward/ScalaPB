@@ -4,9 +4,6 @@
 # By listing them here we can keep tabs on which ones are failing and be sure
 # that we don't introduce regressions in other tests.
 
-Recommended.FieldMaskNumbersDontRoundTrip.JsonOutput
-Recommended.FieldMaskPathsDontRoundTrip.JsonOutput
-Recommended.FieldMaskTooManyUnderscore.JsonOutput
 Recommended.Proto2.JsonInput.FieldNameExtension.Validator
 Recommended.Proto3.JsonInput.BoolFieldDoubleQuotedFalse
 Recommended.Proto3.JsonInput.BoolFieldDoubleQuotedTrue

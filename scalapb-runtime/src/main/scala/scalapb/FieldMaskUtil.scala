@@ -101,6 +101,13 @@ object FieldMaskUtil {
     val buf   = new java.lang.StringBuilder()
     var first = true
     fieldMask.paths.foreach { path =>
+      require(!path.exists(isUpper), "FieldMask protobuf paths must not contain uppercase letters")
+      path.indices.foreach { i =>
+        require(
+          path(i) != '_' || (i + 1 < path.length && isLower(path(i + 1))),
+          "FieldMask underscores must be followed by a lowercase letter"
+        )
+      }
       if (!path.isEmpty) {
         if (!first) {
           buf.append(',')
