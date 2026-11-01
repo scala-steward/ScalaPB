@@ -1,12 +1,79 @@
 package scalapb.textformat
 
-import scalapb.descriptors.{FieldDescriptor, PEmpty, PRepeated}
+import scalapb.descriptors._
 import scalapb.{GeneratedMessage, textformat}
+import scala.annotation.nowarn
 
 object Printer {
-  def print(t: GeneratedMessage, out: TextGenerator): Unit = {
-    print(t.toPMessage, out)
+  @nowarn("cat=deprecation")
+  def print(t: GeneratedMessage, out: TextGenerator): Unit =
+    t.companion.scalaDescriptor.fields.sortBy(_.number).foreach { fd =>
+      fd.scalaType match {
+        case ScalaType.Message(messageType) =>
+          // Unlike PMessage, the original message retains unknown fields and its serialized size.
+          // Only use the legacy accessor for messages: it drops implicit scalar defaults itself,
+          // including negative floating-point zero, which TextFormat must preserve.
+          val value = t.getFieldByNumber(fd.number)
+          if (fd.isRepeated)
+            value.asInstanceOf[Seq[GeneratedMessage]].foreach(printMessageField(fd, _, out))
+          else {
+            val omitEmpty = omitEmptyMessage(fd, messageType)
+            // The legacy accessor returns null for an unboxed default instance, even when
+            // required fields inside that instance give it a nonzero serialized size.
+            val message =
+              if (value == null && (omitEmpty || fd.containingMessage.getOptions.getMapEntry))
+                t.companion
+                  .messageCompanionForFieldNumber(fd.number)
+                  .defaultInstance
+                  .asInstanceOf[GeneratedMessage]
+              else value.asInstanceOf[GeneratedMessage]
+            if (message != null && (!omitEmpty || message.serializedSize != 0))
+              printMessageField(fd, message, out)
+          }
+        case _ => printField(fd, t.getField(fd), out)
+      }
+    }
+
+  private def omitEmptyMessage(fd: FieldDescriptor, messageType: Descriptor): Boolean = {
+    val options = fd.getOptions
+      .extension(scalapb.options.ScalapbProto.field)
+      .getOrElse(scalapb.options.FieldOptions.defaultInstance)
+    val noBox =
+      if (options.noBox.isDefined || options.required.isDefined)
+        options.getNoBox || options.getRequired
+      else
+        messageType.getOptions
+          .extension(scalapb.options.ScalapbProto.message)
+          .exists(_.getNoBox)
+    val sealedOneof =
+      messageType.oneofs.exists(o => o.name == "sealed_value" || o.name == "sealed_value_optional")
+    !fd.isRequired && !options.getRequired && fd.containingOneof.isEmpty &&
+    !fd.containingMessage.getOptions.getMapEntry && (noBox || sealedOneof)
   }
+
+  private def printMessageField(
+      fd: FieldDescriptor,
+      message: GeneratedMessage,
+      out: TextGenerator
+  ): Unit = {
+    out.add(fd.name).addNewLine(" {").indent()
+    print(message, out)
+    out.outdent().addNewLine("}")
+    ()
+  }
+
+  private def isImplicitDefault(fd: FieldDescriptor, value: PValue): Boolean =
+    !fd.hasPresence && !fd.containingMessage.getOptions.getMapEntry && (value match {
+      case PInt(v)        => v == 0
+      case PLong(v)       => v == 0L
+      case PFloat(v)      => java.lang.Float.floatToRawIntBits(v) == 0
+      case PDouble(v)     => java.lang.Double.doubleToRawLongBits(v) == 0L
+      case PBoolean(v)    => !v
+      case PString(v)     => v.isEmpty
+      case PByteString(v) => v.isEmpty
+      case PEnum(v)       => v.number == 0
+      case _              => false
+    })
 
   def print(p: scalapb.descriptors.PMessage, out: TextGenerator): Unit = {
     p.value.toSeq.sortBy(_._1.number).foreach { case (fd, value) =>
@@ -24,8 +91,9 @@ object Printer {
     value match {
       case PRepeated(values) =>
         values.foreach(v => printSingleField(fd, v, out))
-      case PEmpty =>
-      case _      =>
+      case PEmpty                            =>
+      case _ if isImplicitDefault(fd, value) =>
+      case _                                 =>
         printSingleField(fd, value, out); ()
     }
 
@@ -66,9 +134,15 @@ object Printer {
       case scalapb.descriptors.PBoolean(v) =>
         out.add(v.toString)
       case scalapb.descriptors.PFloat(v) =>
-        out.add(NumberUtils.floatToString(v))
+        out.add(
+          if (java.lang.Float.floatToRawIntBits(v) == Int.MinValue) "-0.0"
+          else NumberUtils.floatToString(v)
+        )
       case scalapb.descriptors.PDouble(v) =>
-        out.add(NumberUtils.doubleToString(v))
+        out.add(
+          if (java.lang.Double.doubleToRawLongBits(v) == Long.MinValue) "-0.0"
+          else NumberUtils.doubleToString(v)
+        )
       case scalapb.descriptors.PEnum(v) =>
         if (!v.isUnrecognized)
           out.add(v.name)

@@ -1,5 +1,11 @@
 # Change Log
 ## [1.0.0] (Not yet released)
+- BREAKING CHANGE: TextFormat printing (including `toProtoString` and generated
+  `toString`) now omits implicit scalar defaults and empty optional `no_box` and
+  sealed-oneof message fields by default, matching Java's field-presence behavior
+  (#2319). Explicitly present defaults, required fields, selected oneof cases,
+  repeated elements, and map entries are preserved. Regenerate sources to fix
+  unboxed-message accessors for custom types whose default instances are invalid.
 - Resolve core Edition 2023 descriptor features with inherited overrides; expose presence, packing, enum openness, UTF-8 policy and message encoding, and recognize `LEGACY_REQUIRED` fields.
 - Use protobuf Java naming helpers for Java conversions and descriptor references,
   including Edition 2024 file/type naming and correct Scala escaping of keyword

@@ -394,7 +394,9 @@ class ProtobufGenerator(
               .add(s"val __t = $e")
               .add({
                 val cond =
-                  if (!f.isEnum)
+                  if (f.isMessage)
+                    s"__t.serializedSize != 0"
+                  else if (!f.isEnum)
                     s"__t != ${defaultValueForGet(f, uncustomized = true)}"
                   else
                     s"__t.getNumber() != 0"
